@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sensor Readings</title>
+    <style>
+        .row {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        .sensor {
+            width: 20%;
+            text-align: center;
+            padding: 10px;
+            box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+            transition: 0.3s;
+        }
+    </style>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            function fetchData() {
+                fetch('/data')
+                    .then(response => response.json())
+                    .then(data => {
+                        for (const [key, value] of Object.entries(data)) {
+                            const sensorDiv = document.getElementById(key);
+                            if (sensorDiv) {
+                                sensorDiv.querySelector('.temperature').textContent = `Temperature: ${value.temperature} °F`;
+                                sensorDiv.querySelector('.humidity').textContent = `Humidity: ${value.humidity}%`;
+                            }
+                        }
+                    })
+                    .catch(error => console.error('Error fetching data:', error));
+            }
+
+            setInterval(fetchData, 5000); // Update every 5 seconds
+            fetchData(); // Also fetch immediately on page load
+        });
+    </script>
+</head>
+<body>
+    <h1>Sensor Readings</h1>
+    <div class="row">
+        <!-- Sensors -->
+        {% for sensor in sensors %}
+        <div class="sensor" id="{{ sensor.name }}">
+            <h2>{{ sensor.name }}</h2>
+            <p class="temperature">Temperature: {{ sensor.temperature }} °F</p>
+            <p class="humidity">Humidity: {{ sensor.humidity }}%</p>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <!-- Other content -->
+    
+    <center>
+        <div>
+            <a href="/login">Admin Login</a>
+            <a href="/admin">Admin Portal</a>
+        </div>
+    </center>
+</body>
+</html>
